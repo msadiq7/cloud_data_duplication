@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DataGuard | Cloud Data Deduplication</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">D</div>
+
+                <div>
+                    <h2>DataGuard</h2>
+                    <span>Deduplication</span>
+                </div>
+            </div>
+
+            <nav>
+
+                <a href="#" class="nav-item active">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="#records" class="nav-item">
+                    <span>☷</span>
+                    Records
+                </a>
+
+                <a href="#upload" class="nav-item">
+                    <span>↑</span>
+                    Upload CSV
+                </a>
+
+            </nav>
+
+            <div class="system-status">
+                <span class="online-dot"></span>
+
+                <div>
+                    <strong>System Online</strong>
+                    <small>Database connected</small>
+                </div>
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+
+            <!-- HEADER -->
+            <header class="header">
+
+                <div>
+                    <div class="breadcrumb">
+                        Home / Dashboard
+                    </div>
+
+                    <h1>Cloud Data Deduplication</h1>
+
+                    <p>
+                        Validate, detect duplicates and maintain clean data.
+                    </p>
+                </div>
+
+                <div class="status-badge">
+                    ● System Active
+                </div>
+
+            </header>
+
+
+            <!-- STATISTICS -->
+            <section class="stats">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+                        #
+                    </div>
+
+                    <div>
+                        <span>Total Records</span>
+                        <h2 id="totalRecords">0</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+                        ✓
+                    </div>
+
+                    <div>
+                        <span>Verified Records</span>
+                        <h2 id="verifiedRecords">0</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+                        !
+                    </div>
+
+                    <div>
+                        <span>Duplicates Prevented</span>
+                        <h2 id="duplicatesPrevented">0</h2>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ADD RECORD -->
+            <section class="card">
+
+                <div class="card-header">
+
+                    <div>
+                        <h2>Add New Record</h2>
+
+                        <p>
+                            Enter information to validate and store a unique record.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <form id="recordForm">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="name">
+                                Full Name
+                            </label>
+
+                            <input
+                                id="name"
+                                type="text"
+                                placeholder="Enter full name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email Address
+                            </label>
+
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="example@email.com"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="phone">
+                                Phone Number
+                            </label>
+
+                            <input
+                                id="phone"
+                                type="text"
+                                maxlength="10"
+                                placeholder="10 digit phone number"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="message"></div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-btn">
+
+                        ✓ Verify & Save Record
+
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- CSV UPLOAD -->
+            <section class="card" id="upload">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>Bulk CSV Upload</h2>
+
+                        <p>
+                            Upload multiple records and automatically detect duplicates.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="upload-box">
+
+                    <div class="upload-symbol">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Upload CSV File
+                    </h3>
+
+                    <p>
+                        Required columns:
+                        <strong>name, email, phone</strong>
+                    </p>
+
+                    <input
+                        type="file"
+                        id="csvFile"
+                        accept=".csv"
+                    >
+
+                    <br>
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        onclick="uploadCSV()">
+
+                        Upload & Process
+
+                    </button>
+
+                </div>
+
+
+                <div id="uploadMessage"></div>
+
+            </section>
+
+
+            <!-- RECORDS -->
+            <section class="card" id="records">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>Verified Records</h2>
+
+                        <p>
+                            Only unique and validated records are stored.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="refresh-btn"
+                        onclick="loadRecords()">
+
+                        ↻ Refresh
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Created</th>
+                                <th>Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="recordsTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <footer>
+                DataGuard — Cloud Data Deduplication System
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <script
+        src="{{ url_for('static', filename='script.js') }}">
+    </script>
+
+</body>
+
+</html>
